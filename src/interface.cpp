@@ -6,14 +6,28 @@
 
 typedef const rosidl_message_type_support_t * (* get_message_ts_func)();
 
-
+/**
+ * @function get_type_support_library
+ */
 void* get_type_support_library(const char* _interface_name, 
                                const char* _interface_type)
 {
+  // Load the type support library for the package containing the requested type
+  std::string ts_lib_name;
+  ts_lib_name = "lib" + std::string(_interface_name) + "__rosidl_typesupport_c.so";
+  printf("edoras-core. Loading type support library %s", ts_lib_name.c_str());
+  void * type_support_lib = dlopen(ts_lib_name.c_str(), RTLD_LAZY);
+  if (type_support_lib == nullptr) {
+    printf("edoras_core: Failed to load type support library: %s", dlerror());
+    return nullptr;
+  }
 
-  return nullptr;
+  return type_support_lib;
 }
-                                       
+   
+/**
+ * @function get_type_info
+ */                                       
 const TypeInfo_t* get_type_info(const char* _interface_name, 
                                 const char* _interface_type)
 {
@@ -58,11 +72,33 @@ const TypeInfo_t* get_type_info(const char* _interface_name,
 
 }
 
-const TypeSupport_t* get_type_support_2(const char* _interface_name, 
-                                        const char* _interface_type, 
-                                        void* _ts_library)
+/**
+ * @function get_type_support
+ */
+const TypeSupport_t* get_type_support(const char* _interface_name, 
+                                      const char* _interface_type, 
+                                      void* _ts_library)
 {
- return nullptr;
+
+  // Load the function that, when called, will give us the type support for the interface type we
+  // are interested in
+  std::string ts_func_name;
+  ts_func_name = "rosidl_typesupport_c__get_message_type_support_handle__" + std::string(_interface_name) +
+    "__msg__" + std::string(_interface_type);
+  printf("edoras_core: Loading type support function %s", ts_func_name.c_str());
+
+  get_message_ts_func type_support_handle_func =
+    reinterpret_cast<get_message_ts_func>(dlsym(_ts_library, ts_func_name.c_str()));
+  if (type_support_handle_func == nullptr) {
+    printf("edoras_core: Failed to load type support function: %s", dlerror());
+    return nullptr;
+  }
+
+  // Call the function to get the type support we want
+  const TypeSupport_t * ts = type_support_handle_func();
+  printf("edoras_core. Loaded type support %s", ts->typesupport_identifier);
+
+  return ts;
 }
                                                
                                                // TODO: IS IT CONST?

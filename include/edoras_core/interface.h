@@ -18,9 +18,9 @@ extern "C"
   const TypeInfo_t* get_type_info(const char* _interface_name, 
                                   const char* _interface_type);
 
-  const TypeSupport_t* get_type_support_2(const char* _interface_name, 
-                                          const char* _interface_type, 
-                                          void* _ts_library);
+  const TypeSupport_t* get_type_support(const char* _interface_name, 
+                                        const char* _interface_type, 
+                                        void* _ts_library);
                                                
                                                // TODO: IS IT CONST?
   uint8_t* from_uint_buffer_to_msg_pointer( const uint8_t* _buffer, size_t _offset, 
