@@ -4,6 +4,9 @@
 #include <string>
 #include <dlfcn.h>
 
+typedef const rosidl_message_type_support_t * (* get_message_ts_func)();
+
+
 void* get_type_support_library(const char* _interface_name, 
                                const char* _interface_type)
 {

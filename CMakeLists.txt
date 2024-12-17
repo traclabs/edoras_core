@@ -31,14 +31,7 @@ endforeach()
 
 message(STATUS "DEP INCLUDE DIRS: ${DEP_INCLUDE_DIRS}")
 
-#include_directories(edoras
-#  PUBLIC
-#  include
-#  ${DEP_INCLUDE_DIRS}
-#)
-
-
-add_library(edoras
+add_library(edoras SHARED
   src/interface.cpp
 #  src/conversion_private.cpp
 #  src/debug_helpers.cpp
@@ -49,7 +42,7 @@ target_include_directories(edoras
   ${DEP_INCLUDE_DIRS}
 )
 
-target_link_libraries(edoras
+target_link_libraries(edoras 
   PUBLIC
   ${DEP_LIBRARIES}
 )
