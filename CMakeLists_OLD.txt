@@ -3,7 +3,19 @@ project(edoras_core LANGUAGES CXX)
 
 find_package(ament_cmake REQUIRED)
 
-set(dependencies
+set(include_deps
+ rosidl_typesupport_introspection_c
+ rosidl_runtime_c
+ rcutils
+ rosidl_typesupport_interface
+ rmw
+ rosidl_dynamic_typesupport
+ # rcl_interfaces
+ # rcl
+)
+
+
+set(lib_deps
  rosidl_typesupport_introspection_c
  rosidl_runtime_c
  rcutils
@@ -18,79 +30,52 @@ set(dependencies
   rmw_fastrtps_shared_cpp
   rosidl_typesupport_fastrtps_cpp
   rmw_dds_common
+  rmw_dds_common__rosidl_typesupport_cpp
   rosidl_typesupport_introspection_cpp
+  rmw_dds_common__rosidl_generator_c	
   rosidl_typesupport_cpp
   ament_index_cpp
   fastrtps
-  rosidl_typesupport_interface ## ADDED
   # rcl
   # rmw_fastrtps_shared_cpp
 )
 
-foreach(dep ${dependencies})
-  find_package(${dep} REQUIRED)
-endforeach()
+#set(ROS2_DIR /opt/ros/jazzy)
+#foreach(dep ${include_deps})
+#  list(APPEND DEP_INCLUDE_DIRS "${ROS2_DIR}/include/${dep}")
+#endforeach()
 
-# *******************************************************
-# Code that actually does the conversion
-add_library(${PROJECT_NAME}_private SHARED
-            src/conversion_private.cpp
-#           src/debug_helpers.cpp
+#foreach(dep ${lib_deps})
+#  find_library(${dep}_LIB ${dep}  HINTS ${ROS2_DIR}/lib ) 
+#  list(APPEND DEP_LIBRARIES "${${dep}_LIB}")
+#endforeach()
+#message(STATUS "DEP LIBS: ${DEP_LIBRARIES} !!!!!!!!!!!!!!!!")
+add_library(${PROJECT_NAME} SHARED
+  src/interface.cpp
+#  src/conversion_private.cpp
+#  src/debug_helpers.cpp
 )
-ament_target_dependencies(${PROJECT_NAME}_private
-  ${dependencies}
-)
-
-target_include_directories(${PROJECT_NAME}_private
+target_include_directories(${PROJECT_NAME}
   PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
+  ${DEP_INCLUDE_DIRS}
+)
+
+target_link_libraries(${PROJECT_NAME}
   INTERFACE
-  ${rosidl_typesupport_introspection_c_INCLUDE_DIRS}
-  ${rcutils_INCLUDE_DIRS}
-)
+  ${DEP_LIBRARIES}
+#  /opt/ros/jazzy/lib/libfastrtps.so.2.14
+)	
 
-
-# *******************************************************
-# Interface that is used by apps like cFS and bridges
-add_library(${PROJECT_NAME} SHARED
-  src/interface.cpp
-)
-target_link_libraries(${PROJECT_NAME} 
- PUBLIC
- ${PROJECT_NAME}_private
-)
-
-
-
-################
-
-get_target_property(TEST_INC  edoras_core_private  INTERFACE_INCLUDE_DIRECTORIES)
-get_target_property(TEST_LIBS  edoras_core_private  INTERFACE_LINK_LIBRARIES)
-message(STATUS "TEST INC : ${TEST_INC}")
-message(STATUS "TEST LIB : ${TEST_LIBS}")
-
-get_target_property(TEST_INC_2  edoras_core  INTERFACE_INCLUDE_DIRECTORIES)
-get_target_property(TEST_LIBS_2  edoras_core  INTERFACE_LINK_LIBRARIES)
-message(STATUS "TEST INC_2 : ${TEST_INC_2}")
-message(STATUS "TEST LIB_2 : ${TEST_LIBS_2}")
-
-################
-
-# ********************************************************
 # Install
-install(TARGETS ${PROJECT_NAME} ${PROJECT_NAME}_private
+install(TARGETS ${PROJECT_NAME} 
         EXPORT ${PROJECT_NAME}Targets
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib        	
 )
-set_target_properties(${PROJECT_NAME} PROPERTIES
- INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/lib
- BUILD_WITH_INSTALL_RPATH ON
-) 
 
-install(DIRECTORY include/${PROJECT_NAME} 
-        DESTINATION include)
+install(DIRECTORY include/${PROJECT_NAME} DESTINATION include)
 
 install(EXPORT ${PROJECT_NAME}Targets
         FILE ${PROJECT_NAME}Targets.cmake

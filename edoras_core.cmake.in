@@ -1,0 +1,18 @@
+@PACKAGE_INIT@
+include(CMakeFindDependencyMacro)
+include ("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@Targets.cmake")
+
+foreach(dep @dependencies@)
+  find_dependency(${dep})
+endforeach()
+
+
+#set_and_check(EDORAS_CORE_INCLUDE_DIR "@PACKAGE_INCLUDE_INSTALL_DIR@")
+get_target_property(PROJ_INCLUDE_DIR  @PROJECT_NAME@_private  INTERFACE_INCLUDE_DIRECTORIES)
+get_target_property(PROJ_LINK_LIBS @PROJECT_NAME@_private  INTERFACE_LINK_LIBRARIES)
+
+set(@PROJECT_NAME@_INCLUDE_DIRS ${PROJ_INCLUDE_DIR})
+set(@PROJECT_NAME@_LIBRARIES @PROJECT_NAME@)
+set(@PROJECT_NAME@_LINK_LIBS ${PROJ_LINK_LIBS})
+
+check_required_components(@PROJECT_NAME@)
