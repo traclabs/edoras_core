@@ -23,16 +23,30 @@ uint8_t* from_uint_buffer_to_msg_pointer_impl(const uint8_t* _buffer, size_t _of
 
 uint8_t* create_msg_impl(const TypeInfo_t* _ti);
 
+
+std::vector<std::string> split(const char* _name, char _delimiter, bool _backwards);
+
+///////////////////////////////////////////////////////////////////////////////////////////
+
+template <typename T>
 bool msg_to_val_impl(const uint8_t* _buffer, 
                      const TypeInfo_t* _ti, 
                      const std::vector<std::string> &_members, 
-                     double* _value);
+                     T* _val);
 
+template <typename T>
 bool member_to_val_impl(const MemberInfo_t &_mi, 
                         const uint8_t* _buffer, 
                         const std::vector<std::string> &_members, 
-                        double* _val);
+                        T* _val);
 
-std::vector<std::string> split(const char* _name, char _delimiter, bool _backwards);
+template <typename T>
+bool primitive_to_val_impl(const MemberInfo_t &_mi, 
+                           const uint8_t* _buffer, 
+                           T* _val);
+
+
+#include <edoras_core/message_reading_impl.hpp>
+                                          
                                                                                
 #endif /* __EDORAS_CONVERSION_PRIVATE__ */

@@ -54,10 +54,37 @@ uint8_t* create_msg(const TypeInfo_t* _ti)
 
 //////////////////////////////////////////
 
-bool get_float64(const uint8_t* _buffer, const TypeInfo_t* _ti, const char* _member_names, double* _val)
+bool get_float64(const uint8_t* _buffer, 
+                 const TypeInfo_t* _ti, 
+                 const char* _member_names, 
+                 double* _val)
 {
-   // 1. Get the name separated by '.'
    std::vector<std::string> members = split(_member_names, '.', true);
 
-   return msg_to_val_impl(_buffer, _ti, members, _val);
+   return msg_to_val_impl<double>(_buffer, _ti, members, _val);
 }
+
+bool get_uint8(const uint8_t* _buffer, 
+               const TypeInfo_t* _ti, 
+               const char* _member_names, 
+               uint8_t* _val)
+{
+   std::vector<std::string> members = split(_member_names, '.', true);
+
+   return msg_to_val_impl<uint8_t>(_buffer, _ti, members, _val);
+}
+
+bool get_const_char(const uint8_t* _buffer, 
+                    const TypeInfo_t* _ti, 
+                    const char* _member_names, 
+                    const char* _val)
+{
+   std::vector<std::string> members = split(_member_names, '.', true);
+
+   std::string val;
+   bool res =  msg_to_val_impl<std::string>(_buffer, _ti, members, &val);
+   _val = val.c_str();
+   
+   return res;   
+}
+

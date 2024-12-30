@@ -3,7 +3,6 @@
 
 #include <rmw/rmw.h>
 #include <rcutils/types/uint8_array.h>
-#include <rosidl_typesupport_introspection_c/field_types.h>
 
 #include <dlfcn.h>
 #include <string>
@@ -214,83 +213,6 @@ uint8_t* create_msg_impl(const TypeInfo_t* _ti)
   return data;
 }
 
-/**
- * @function get_value_impl
- * @brief members: (x.position, w.linear)
- */
-bool msg_to_val_impl(const uint8_t* _buffer, 
-                     const TypeInfo_t* _ti, 
-                     const std::vector<std::string> &_members, 
-                     double* _val)
-{   
-   if( _members.size() == 1 )
-   {
-      for(uint32_t i = 0; i < _ti->member_count_; i++)
-      {
-         const MemberInfo_t& member_info = _ti->members_[i];
-         const uint8_t* member_data = &_buffer[member_info.offset_];
-         
-         if( member_info.name_ != _members.back() )
-           continue;
-         
-         if(member_info.type_id_ == rosidl_typesupport_introspection_c__ROS_TYPE_MESSAGE ||
-            member_info.is_array_ )
-            return false;
-            
-         if(member_info.type_id_ != rosidl_typesupport_introspection_c__ROS_TYPE_DOUBLE)
-            return false;
-              
-         // Parse
-         *_val = *reinterpret_cast<const double *>(member_data);
-         return true;
-                  
-      } // for i 
-      
-   } else {
-
-     for(uint32_t i = 0; i < _ti->member_count_; i++)
-     {
-         const MemberInfo_t& member_info = _ti->members_[i];
-         const uint8_t* member_data = &_buffer[member_info.offset_];
-         if (member_info.name_ != _members.back())
-           continue;
-         
-         auto ms = _members;
-         ms.pop_back();
-         return member_to_val_impl(member_info, member_data, ms, _val);                   
-     } // for i
-
-   
-   
-   } // else
-   
-   return false;   
-}
-
-/**
- * @function member_to_val_impl
- */
-bool member_to_val_impl(const MemberInfo_t &_mi, 
-                        const uint8_t* _buffer, 
-                        const std::vector<std::string> &_members, 
-                        double* _val)
-{
-   if( _mi.is_array_)
-   {
-   
-   } else {
-   
-     if(_mi.type_id_ == rosidl_typesupport_introspection_c__ROS_TYPE_MESSAGE) {
-
-       const TypeInfo_t* ti = reinterpret_cast<const TypeInfo_t*>(_mi.members_->data);
-       return msg_to_val_impl(_buffer, ti, _members, _val);                 
-     }
-   
-   
-   }
-   
-   return false;
-}
 
 /**
  * @function split
