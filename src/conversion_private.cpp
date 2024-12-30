@@ -3,9 +3,11 @@
 
 #include <rmw/rmw.h>
 #include <rcutils/types/uint8_array.h>
+#include <rosidl_typesupport_introspection_c/field_types.h>
 
 #include <dlfcn.h>
 #include <string>
+#include <sstream>
 
 typedef const rosidl_message_type_support_t * (* get_message_ts_func)();
 
@@ -64,7 +66,7 @@ const TypeInfo_t* get_type_info_impl(const char* _interface_name,
   // Call the function to get the introspection information we want
   const TypeSupport_t * introspection_ts =
     introspection_type_support_handle_func();
-  printf("edoras_core: Loaded type support %s", introspection_ts->typesupport_identifier);
+  printf("edoras_core: Loaded type support %s \n", introspection_ts->typesupport_identifier);
   const TypeInfo_t * type_info =
     reinterpret_cast<const TypeInfo_t *>(
     introspection_ts->data);
@@ -95,7 +97,7 @@ const TypeSupport_t* get_type_support_impl(const char* _interface_name,
 
   // Call the function to get the type support we want
   const TypeSupport_t * ts = type_support_handle_func();
-  printf("edoras_core. Loaded type support %s", ts->typesupport_identifier);
+  printf("edoras_core. Loaded type support %s \n", ts->typesupport_identifier);
 
   return ts;
 }
@@ -111,25 +113,14 @@ uint8_t* from_uint_buffer_to_msg_pointer_impl( const uint8_t* _buffer, size_t _o
   // 1. Get buffer that starts from _offset onwards
   //    this buffer is the binary rc structure
   size_t offset = _offset;
-  printf("Offset start: %d \n", offset);
   // The buffer contains buffer_size + buffer_capacity
   size_t buffer_length;
   size_t buffer_capacity;
   memcpy( &buffer_length, _buffer + offset, sizeof(size_t));
-  offset += sizeof(size_t); printf("Offset now: %d  , with size of size_t: %d \n", offset, sizeof(size_t));
+  offset += sizeof(size_t);
   memcpy( &buffer_capacity, _buffer + offset, sizeof(size_t));  
-  offset += sizeof(size_t); printf("Offset now: %d \n", offset);
-  printf("Buffer length: %lu buffer capacity: %lu. Offset up to here: %d **** \n", buffer_length, buffer_capacity, offset);
-
-  printf("Full buffer contents with header and all, including offset: %lu \n", _offset);
-  for(size_t i = 0; i < buffer_length + _offset + sizeof(size_t) + sizeof(size_t); ++i)
-  {
-   uint8_t di;
-   memcpy(&di, (uint8_t*)_buffer + i, sizeof(uint8_t));
-   printf("%02x ", di);
-  } printf("\n");
-
-
+  offset += sizeof(size_t);
+  printf("Buffer length: %ld buffer capacity: %ld. Offset up to here: %ld **** \n", buffer_length, buffer_capacity, offset);
 
   printf("Buffer content in gateway: \n");
   for(size_t i = 0; i < buffer_length; ++i)
@@ -149,15 +140,15 @@ uint8_t* from_uint_buffer_to_msg_pointer_impl( const uint8_t* _buffer, size_t _o
   // Allocate space for the pointer to the C data
   if( rcutils_uint8_array_resize(serialized_array, buffer_capacity) != RCUTILS_RET_OK)
   {
-    printf("edoras_core: Error initializing array for deserialization process. RESULT: %d \n");
+    printf("edoras_core: Error initializing array for deserialization process \n");
   }
-  printf("Buffer length: %d capacity: %d. Offset: %d \n", 
+  printf("Buffer length: %ld capacity: %ld. Offset: %ld \n", 
           serialized_array->buffer_length, 
           serialized_array->buffer_capacity, offset);
   
   memcpy( (uint8_t*)serialized_array->buffer, _buffer + offset, buffer_length);
   serialized_array->buffer_length = buffer_length;
-  printf("Buffer length 2: %d capacity: %d \n", serialized_array->buffer_length, serialized_array->buffer_capacity);
+  printf("Buffer length 2: %ld capacity: %ld \n", serialized_array->buffer_length, serialized_array->buffer_capacity);
 
   printf("Buffer content in serial: \n");
   for(size_t i = 0; i < buffer_length; ++i)
@@ -174,7 +165,7 @@ uint8_t* from_uint_buffer_to_msg_pointer_impl( const uint8_t* _buffer, size_t _o
 
   // Initialise the message buffer according to the interface type
   // Allocate space to store the binary representation of the message
-  printf("Allocating... Size: %ld \n", *_buffer_size);
+  printf("Allocating  %ld bytes for C structure ROS Msg \n", *_buffer_size);
   
   rcutils_allocator_t * alloca;
   rcutils_allocator_t default_allocator = rcutils_get_default_allocator();
@@ -199,4 +190,129 @@ uint8_t* from_uint_buffer_to_msg_pointer_impl( const uint8_t* _buffer, size_t _o
  return data;
  
  return nullptr;
+}
+
+/**
+ * @function create_msg_impl
+ */
+uint8_t* create_msg_impl(const TypeInfo_t* _ti)
+{
+  rcutils_allocator_t default_allocator = rcutils_get_default_allocator();
+  rcutils_allocator_t* allocator = &default_allocator;
+  
+
+  // Allocate space to store the binary representation of the message
+  uint8_t * data =
+    static_cast<uint8_t *>(allocator->allocate(_ti->size_of_, allocator->state));
+
+  if (nullptr == data) {
+    return nullptr;
+  }
+  // Initialise the message buffer according to the interface type
+  _ti->init_function(data, ROSIDL_RUNTIME_C_MSG_INIT_ALL);
+
+  return data;
+}
+
+/**
+ * @function get_value_impl
+ * @brief members: (x.position, w.linear)
+ */
+bool msg_to_val_impl(const uint8_t* _buffer, 
+                     const TypeInfo_t* _ti, 
+                     const std::vector<std::string> &_members, 
+                     double* _val)
+{   
+   if( _members.size() == 1 )
+   {
+      for(uint32_t i = 0; i < _ti->member_count_; i++)
+      {
+         const MemberInfo_t& member_info = _ti->members_[i];
+         const uint8_t* member_data = &_buffer[member_info.offset_];
+         
+         if( member_info.name_ != _members.back() )
+           continue;
+         
+         if(member_info.type_id_ == rosidl_typesupport_introspection_c__ROS_TYPE_MESSAGE ||
+            member_info.is_array_ )
+            return false;
+            
+         if(member_info.type_id_ != rosidl_typesupport_introspection_c__ROS_TYPE_DOUBLE)
+            return false;
+              
+         // Parse
+         *_val = *reinterpret_cast<const double *>(member_data);
+         return true;
+                  
+      } // for i 
+      
+   } else {
+
+     for(uint32_t i = 0; i < _ti->member_count_; i++)
+     {
+         const MemberInfo_t& member_info = _ti->members_[i];
+         const uint8_t* member_data = &_buffer[member_info.offset_];
+         if (member_info.name_ != _members.back())
+           continue;
+         
+         auto ms = _members;
+         ms.pop_back();
+         return member_to_val_impl(member_info, member_data, ms, _val);                   
+     } // for i
+
+   
+   
+   } // else
+   
+   return false;   
+}
+
+/**
+ * @function member_to_val_impl
+ */
+bool member_to_val_impl(const MemberInfo_t &_mi, 
+                        const uint8_t* _buffer, 
+                        const std::vector<std::string> &_members, 
+                        double* _val)
+{
+   if( _mi.is_array_)
+   {
+   
+   } else {
+   
+     if(_mi.type_id_ == rosidl_typesupport_introspection_c__ROS_TYPE_MESSAGE) {
+
+       const TypeInfo_t* ti = reinterpret_cast<const TypeInfo_t*>(_mi.members_->data);
+       return msg_to_val_impl(_buffer, ti, _members, _val);                 
+     }
+   
+   
+   }
+   
+   return false;
+}
+
+/**
+ * @function split
+ */
+std::vector<std::string> split(const char* _name, char _delimiter, bool _backwards)
+{
+   std::stringstream ss(_name);
+   
+   std::vector<std::string> names;
+   std::string token;
+   
+   while(std::getline(ss, token, _delimiter))
+     names.push_back(token);
+ 
+   std::vector<std::string> result;
+   if(_backwards)
+   {
+      for(int i = names.size() - 1; i >= 0; i--)
+ 	result.push_back(names[i]);     
+   }
+   else
+     result = names;
+     
+   return result;
 }

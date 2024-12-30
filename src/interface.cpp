@@ -4,6 +4,7 @@
 #include <string>
 
 #include <edoras_core/conversion_private.h>
+#include <edoras_core/debug_helpers.h>
 
 /**
  * @function get_type_support_library
@@ -33,7 +34,6 @@ const TypeSupport_t* get_type_support(const char* _interface_name,
   return get_type_support_impl(_interface_name, _interface_type, _ts_library);
 }
                                                
-                                               // TODO: IS IT CONST?
 uint8_t* from_uint_buffer_to_msg_pointer( const uint8_t* _buffer, size_t _offset, 
                                           const TypeSupport_t* _ts, 
                                           const TypeInfo_t* _ti, 
@@ -44,6 +44,20 @@ uint8_t* from_uint_buffer_to_msg_pointer( const uint8_t* _buffer, size_t _offset
 
 void debug_parse_buffer(uint8_t* _buffer, const TypeInfo_t* _ti)
 {
-
+   return debug_parse_buffer_impl(_buffer, _ti);
 }
 
+uint8_t* create_msg(const TypeInfo_t* _ti)
+{
+   return create_msg_impl(_ti);
+}
+
+//////////////////////////////////////////
+
+bool get_float64(const uint8_t* _buffer, const TypeInfo_t* _ti, const char* _member_names, double* _val)
+{
+   // 1. Get the name separated by '.'
+   std::vector<std::string> members = split(_member_names, '.', true);
+
+   return msg_to_val_impl(_buffer, _ti, members, _val);
+}

@@ -35,7 +35,7 @@ endforeach()
 # Code that actually does the conversion
 add_library(${PROJECT_NAME}_private SHARED
             src/conversion_private.cpp
-#           src/debug_helpers.cpp
+           src/debug_helpers.cpp
 )
 ament_target_dependencies(${PROJECT_NAME}_private
   ${dependencies}
@@ -60,22 +60,6 @@ target_link_libraries(${PROJECT_NAME}
  PUBLIC
  ${PROJECT_NAME}_private
 )
-
-
-
-################
-
-get_target_property(TEST_INC  edoras_core_private  INTERFACE_INCLUDE_DIRECTORIES)
-get_target_property(TEST_LIBS  edoras_core_private  INTERFACE_LINK_LIBRARIES)
-message(STATUS "TEST INC : ${TEST_INC}")
-message(STATUS "TEST LIB : ${TEST_LIBS}")
-
-get_target_property(TEST_INC_2  edoras_core  INTERFACE_INCLUDE_DIRECTORIES)
-get_target_property(TEST_LIBS_2  edoras_core  INTERFACE_LINK_LIBRARIES)
-message(STATUS "TEST INC_2 : ${TEST_INC_2}")
-message(STATUS "TEST LIB_2 : ${TEST_LIBS_2}")
-
-################
 
 # ********************************************************
 # Install
