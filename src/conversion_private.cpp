@@ -189,20 +189,42 @@ uint8_t* from_uint_buffer_to_msg_pointer_impl( const uint8_t* _buffer, size_t _o
  return nullptr;
 }
 
-void from_msg_pointer_to_uint_buffer_impl( uint8_t* _msg_data, 
+uint8_t* from_msg_pointer_to_uint_buffer_impl( const uint8_t* _msg_data, 
                                            const TypeSupport_t* _ts, 
                                            const TypeInfo_t* _ti, 
-                                           uint8_t* _buffer)
-{
+                                           size_t* _buffer_size)
+{  printf("Creating serialized message from ROS C struct \n");
    // 1. Convert _msg_data to SerializedMessage type
    rcutils_allocator_t allocator = rcutils_get_default_allocator();
-   rcutils_uint8_array_t* serialized_array = new rcutils_uint8_array_t;
-   
+   // Initialization: From rclcpp/src/serialized_message.cpp
+   rcutils_uint8_array_t* serialized_array = new rcutils_uint8_array_t(rmw_get_zero_initialized_serialized_message());
+
    rmw_serialized_message_init(serialized_array, 0u, &allocator);   
-   printf("Before serializing: buffer length: %ld capacity: %ld *********** \n", serialized_array->buffer_length,  serialized_array->buffer_capacity);
-   printf("RMW Serialize...\n");
-   rmw_serialize(_msg_data, _ts, serialized_array);
-   printf("After serializing: buffer length: %ld capacity: %ld *********** \n", serialized_array->buffer_length,  serialized_array->buffer_capacity);
+
+   // Read that this is not implemented by most libraries. Should be deprecated, returns 0
+   //rosidl_runtime_c__Sequence__bound bounds;
+   //rmw_get_serialized_message_size(_ts, &bounds, &buffer_size);
+
+   rmw_ret_t res = rmw_serialize(_msg_data, _ts, serialized_array);
+   printf("After serializing: buffer length: %ld capacity: %ld *********** \n", 
+           serialized_array->buffer_length,  serialized_array->buffer_capacity);
+
+    // Pack up the data:
+    // size_t (8 bytes containing buffer_length)
+    // size_t (8 bytes containing buffer_capacity)
+    // serialized_array (buffer_length bytes containing the serialized message)          
+   *_buffer_size = sizeof(size_t) + sizeof(size_t) + serialized_array->buffer_length;
+   uint8_t* buffer = static_cast<uint8_t *>( malloc(*_buffer_size) );
+   
+   // Fill
+   size_t offset = 0;
+   memcpy( buffer + offset, &serialized_array->buffer_length, sizeof(size_t));
+   offset += sizeof(size_t);
+   memcpy( buffer + offset, &serialized_array->buffer_capacity, sizeof(size_t));
+   offset += sizeof(size_t);
+   memcpy( buffer + offset, &serialized_array->buffer, serialized_array->buffer_length);
+           
+   return buffer;
 }                                           
 
 

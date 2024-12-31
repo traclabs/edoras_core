@@ -48,12 +48,12 @@ uint8_t* from_uint_buffer_to_msg_pointer( const uint8_t* _buffer, size_t _offset
 /**
  * @function from_msg_pointer_to_uint_buffer
  */
-void from_msg_pointer_to_uint_buffer( uint8_t* _msg_data, 
-                                      const TypeSupport_t* _ts, 
-                                      const TypeInfo_t* _ti, 
-                                      uint8_t* _buffer)
+uint8_t* from_msg_pointer_to_uint_buffer( uint8_t* _msg_data, 
+                                          const TypeSupport_t* _ts, 
+                                          const TypeInfo_t* _ti, 
+                                          size_t *_buffer_size)
 {
-   return from_msg_pointer_to_uint_buffer_impl(_msg_data, _ts, _ti, _buffer);
+   return from_msg_pointer_to_uint_buffer_impl(_msg_data, _ts, _ti, _buffer_size);
 }
 
 void debug_parse_buffer(uint8_t* _buffer, const TypeInfo_t* _ti)

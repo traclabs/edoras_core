@@ -31,10 +31,10 @@ extern "C"
   void debug_parse_buffer(uint8_t* _buffer, const TypeInfo_t* _ti);
 
   // from ROS C msg structure to SerializedMsg
-  void from_msg_pointer_to_uint_buffer( uint8_t* _msg_data, 
-                                        const TypeSupport_t* _ts, 
-                                        const TypeInfo_t* _ti, 
-                                        uint8_t* _buffer);
+  uint8_t* from_msg_pointer_to_uint_buffer( uint8_t* _msg_data, 
+                                            const TypeSupport_t* _ts, 
+                                            const TypeInfo_t* _ti, 
+                                            size_t* _buffer_size);
 
   // Init msg
   uint8_t* create_msg(const TypeInfo_t* _ti);  
