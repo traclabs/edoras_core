@@ -21,6 +21,11 @@ uint8_t* from_uint_buffer_to_msg_pointer_impl(const uint8_t* _buffer, size_t _of
                                               const TypeInfo_t* _ti, 
                                               size_t* _buffer_size);                                           
 
+void from_msg_pointer_to_uint_buffer_impl( uint8_t* _msg_data, 
+                                           const TypeSupport_t* _ts, 
+                                           const TypeInfo_t* _ti, 
+                                           uint8_t* _buffer);
+
 uint8_t* create_msg_impl(const TypeInfo_t* _ti);
 
 

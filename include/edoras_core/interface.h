@@ -22,13 +22,19 @@ extern "C"
                                         const char* _interface_type, 
                                         void* _ts_library);
                                                
-                                               // TODO: IS IT CONST?
+  // From buffer (SerializedMsg) to return ROS C message structure
   uint8_t* from_uint_buffer_to_msg_pointer( const uint8_t* _buffer, size_t _offset, 
                                             const TypeSupport_t* _ts, 
                                             const TypeInfo_t* _ti, 
                                             size_t* _buffer_size);
 
   void debug_parse_buffer(uint8_t* _buffer, const TypeInfo_t* _ti);
+
+  // from ROS C msg structure to SerializedMsg
+  void from_msg_pointer_to_uint_buffer( uint8_t* _msg_data, 
+                                        const TypeSupport_t* _ts, 
+                                        const TypeInfo_t* _ti, 
+                                        uint8_t* _buffer);
 
   // Init msg
   uint8_t* create_msg(const TypeInfo_t* _ti);  

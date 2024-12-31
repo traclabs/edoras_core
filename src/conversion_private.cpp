@@ -147,7 +147,6 @@ uint8_t* from_uint_buffer_to_msg_pointer_impl( const uint8_t* _buffer, size_t _o
   
   memcpy( (uint8_t*)serialized_array->buffer, _buffer + offset, buffer_length);
   serialized_array->buffer_length = buffer_length;
-  printf("Buffer length 2: %ld capacity: %ld \n", serialized_array->buffer_length, serialized_array->buffer_capacity);
 
   printf("Buffer content in serial: \n");
   for(size_t i = 0; i < buffer_length; ++i)
@@ -180,9 +179,8 @@ uint8_t* from_uint_buffer_to_msg_pointer_impl( const uint8_t* _buffer, size_t _o
 
   
   // 3. Deserialize the message into a ROS message C structure
-  printf("Deserializing.... \n");
   if ( rmw_deserialize( serialized_array, _ts, data ) != RMW_RET_OK ) {
-    printf("Failed to apply rmw_deserialize \n");
+    printf("edoras_core: Failed to apply rmw_deserialize \n");
     return nullptr;
   }
 
@@ -190,6 +188,23 @@ uint8_t* from_uint_buffer_to_msg_pointer_impl( const uint8_t* _buffer, size_t _o
  
  return nullptr;
 }
+
+void from_msg_pointer_to_uint_buffer_impl( uint8_t* _msg_data, 
+                                           const TypeSupport_t* _ts, 
+                                           const TypeInfo_t* _ti, 
+                                           uint8_t* _buffer)
+{
+   // 1. Convert _msg_data to SerializedMessage type
+   rcutils_allocator_t allocator = rcutils_get_default_allocator();
+   rcutils_uint8_array_t* serialized_array = new rcutils_uint8_array_t;
+   
+   rmw_serialized_message_init(serialized_array, 0u, &allocator);   
+   printf("Before serializing: buffer length: %ld capacity: %ld *********** \n", serialized_array->buffer_length,  serialized_array->buffer_capacity);
+   printf("RMW Serialize...\n");
+   rmw_serialize(_msg_data, _ts, serialized_array);
+   printf("After serializing: buffer length: %ld capacity: %ld *********** \n", serialized_array->buffer_length,  serialized_array->buffer_capacity);
+}                                           
+
 
 /**
  * @function create_msg_impl
