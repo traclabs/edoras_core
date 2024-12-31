@@ -45,8 +45,40 @@ bool primitive_to_val_impl(const MemberInfo_t &_mi,
                            const uint8_t* _buffer, 
                            T* _val);
 
+template <typename T>
+bool val_to_msg_field_impl(uint8_t* _buffer, 
+                           const TypeInfo_t* _ti, 
+                           const std::vector<std::string> &_members, 
+                           const T &_val);
 
 #include <edoras_core/message_reading_impl.hpp>
                                           
+////////////////////////////////////////////////////////////////////////////
+
+template <typename T>
+bool val_to_msg_field_impl(uint8_t* _buffer, 
+                           const TypeInfo_t* _ti, 
+                           const std::vector<std::string> &_members, 
+                           const T &_val);                                          
+
+template<typename T>
+bool write_member_nested(uint8_t* _buffer,
+                         const MemberInfo_t &_mi,
+                         const std::vector<std::string> &_members,
+                         const T& _val);
+                             
+template<int RosTypeId, typename T>
+bool write_member(uint8_t* _buffer,
+                  const MemberInfo_t &_mi,
+                  const std::vector<std::string> &_members, 
+                  const T& _val);                             
+                    
+template<int RosTypeId, typename T>                    
+bool write_member_item(uint8_t* _buffer,
+                       const std::vector<std::string> &_members,
+                       const T& _val);   
+                       
+                                                                                     
+#include <edoras_core/message_parsing_impl.hpp>                                          
                                                                                
 #endif /* __EDORAS_CONVERSION_PRIVATE__ */

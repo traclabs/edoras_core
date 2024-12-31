@@ -88,3 +88,13 @@ bool get_const_char(const uint8_t* _buffer,
    return res;   
 }
 
+bool set_float64(uint8_t* _buffer, 
+                 const TypeInfo_t* _ti, 
+                 const char* _member_names, 
+                 double _val)
+{
+   std::vector<std::string> members = split(_member_names, '.', true);
+
+   return val_to_msg_field_impl<double>(_buffer, _ti, members, _val);
+}
+

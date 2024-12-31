@@ -30,12 +30,18 @@ extern "C"
 
   void debug_parse_buffer(uint8_t* _buffer, const TypeInfo_t* _ti);
 
+  // Init msg
+  uint8_t* create_msg(const TypeInfo_t* _ti);  
+
   // Get data
-  bool get_float64(const uint8_t* _buffer, const TypeInfo_t* _ti, const char* _member_names, double *_val);
+  bool get_float64(const uint8_t* _buffer, const TypeInfo_t* _ti, const char* _member_name, double *_val);
+  bool get_uint8(const uint8_t* _buffer, const TypeInfo_t* _ti, const char* _member_name, uint8_t* _val);
+  bool get_const_char(const uint8_t* _buffer, const TypeInfo_t* _ti, const char* _member_name, const char* _val);
   
   
   // Set data
-
+  bool set_float64(uint8_t* _buffer, const TypeInfo_t* _ti, const char* _member_name, double _val);
+  
 #ifdef __cplusplus
 }
 #endif // __cplusplus
