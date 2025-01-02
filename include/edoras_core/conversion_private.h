@@ -28,6 +28,7 @@ uint8_t* from_msg_pointer_to_uint_buffer_impl( const uint8_t* _msg_data,
 
 uint8_t* create_msg_impl(const TypeInfo_t* _ti);
 
+void printBufferImpl(const uint8_t* _data, size_t _data_size, const char* _msg, size_t _offset = 0);
 
 std::vector<std::string> split(const char* _name, char _delimiter, bool _backwards);
 

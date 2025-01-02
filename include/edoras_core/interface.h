@@ -39,6 +39,10 @@ extern "C"
   // Init msg
   uint8_t* create_msg(const TypeInfo_t* _ti);  
 
+  // Helpers
+  void printBuffer(uint8_t* _data, size_t _data_size, const char* _msg);
+
+  
   // Get data
   bool get_float64(const uint8_t* _buffer, const TypeInfo_t* _ti, const char* _member_name, double *_val);
   bool get_uint8(const uint8_t* _buffer, const TypeInfo_t* _ti, const char* _member_name, uint8_t* _val);

@@ -119,15 +119,9 @@ uint8_t* from_uint_buffer_to_msg_pointer_impl( const uint8_t* _buffer, size_t _o
   offset += sizeof(size_t);
   memcpy( &buffer_capacity, _buffer + offset, sizeof(size_t));  
   offset += sizeof(size_t);
-  printf("Buffer length: %ld buffer capacity: %ld. Offset up to here: %ld **** \n", buffer_length, buffer_capacity, offset);
 
-  printf("Buffer content in gateway: \n");
-  for(size_t i = 0; i < buffer_length; ++i)
-  {
-   uint8_t di;
-   memcpy(&di, (uint8_t*)_buffer + offset + i, sizeof(uint8_t));
-   printf("%02x ", di);
-  } printf("\n");
+  // DEBUG
+  //printBufferImpl(_buffer, buffer_length, "*-*- Buffer content in gateway *-*-", offset);
 
   // Initialize SerializedMessage
   rcutils_allocator_t allocator = rcutils_get_default_allocator();
@@ -141,22 +135,13 @@ uint8_t* from_uint_buffer_to_msg_pointer_impl( const uint8_t* _buffer, size_t _o
   {
     printf("edoras_core: Error initializing array for deserialization process \n");
   }
-  printf("Buffer length: %ld capacity: %ld. Offset: %ld \n", 
-          serialized_array->buffer_length, 
-          serialized_array->buffer_capacity, offset);
   
   memcpy( (uint8_t*)serialized_array->buffer, _buffer + offset, buffer_length);
   serialized_array->buffer_length = buffer_length;
 
-  printf("Buffer content in serial: \n");
-  for(size_t i = 0; i < buffer_length; ++i)
-  {
-   uint8_t di;
-   memcpy(&di, (uint8_t*)serialized_array->buffer + i, sizeof(uint8_t));
-   printf("%02x ", di);
-  } printf("\n");
-
-  
+  // DEBUG
+  //printBufferImpl( (uint8_t*)serialized_array->buffer, buffer_length, "*-*- Buffer content in serial *-*-", 0);
+ 
   // Get default buffer size
   *_buffer_size = _ti->size_of_;
 
@@ -183,10 +168,8 @@ uint8_t* from_uint_buffer_to_msg_pointer_impl( const uint8_t* _buffer, size_t _o
     printf("edoras_core: Failed to apply rmw_deserialize \n");
     return nullptr;
   }
-
- return data;
  
- return nullptr;
+ return data;
 }
 
 /**
@@ -288,3 +271,19 @@ std::vector<std::string> split(const char* _name, char _delimiter, bool _backwar
      
    return result;
 }
+
+///////////////////////////////
+// Helpers
+
+void printBufferImpl(const uint8_t* _data, size_t _data_size, const char* _msg, size_t _offset )
+{
+   printf("\n %s \n", _msg);
+   for(size_t i = 0; i < _data_size; i++)
+   {
+      printf("%02x ", *(_data + _offset + i) );
+      if(i % 8 == 7)
+        printf("\n");
+   } printf("\n");
+
+}
+

@@ -66,6 +66,15 @@ uint8_t* create_msg(const TypeInfo_t* _ti)
    return create_msg_impl(_ti);
 }
 
+///////////////////////////////////////////
+// Helpers
+
+void printBuffer(uint8_t* _data, size_t _data_size, const char* _msg )
+{    
+   size_t offset = 0;
+   printBufferImpl(_data, _data_size, _msg, offset);
+}
+
 //////////////////////////////////////////
 
 bool get_float64(const uint8_t* _buffer, 
