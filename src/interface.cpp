@@ -111,13 +111,33 @@ bool get_const_char(const uint8_t* _buffer,
    return res;   
 }
 
+//////////////////////////////////////////
+// Setters
+// Message parsing
+/////////////////////////////////////////
+
 bool set_float64(uint8_t* _buffer, 
                  const TypeInfo_t* _ti, 
                  const char* _member_names, 
-                 double _val)
+                 const double &_val)
 {
    std::vector<std::string> members = split(_member_names, '.', true);
 
-   return val_to_msg_field_impl<double>(_buffer, _ti, members, _val);
+   double local_value = _val;
+   void* value_pointer = static_cast<void*>(&local_value);
+   return val_to_msg_field_impl<rosidl_typesupport_introspection_c__ROS_TYPE_DOUBLE>(_buffer, _ti, members, value_pointer);
+}
+
+bool set_const_char(uint8_t* _buffer, 
+                    const TypeInfo_t* _ti, 
+                    const char* _member_names, 
+                    const char* _val)
+{
+   std::vector<std::string> members = split(_member_names, '.', true);
+
+   std::string local_value = _val;
+   void* value_pointer = static_cast<void*>(&local_value);
+   return val_to_msg_field_impl<rosidl_typesupport_introspection_c__ROS_TYPE_STRING>(_buffer, _ti, members, value_pointer);
+
 }
 

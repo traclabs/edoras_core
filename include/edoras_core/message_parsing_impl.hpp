@@ -34,11 +34,11 @@ struct TypeMapping<rosidl_typesupport_introspection_c__ROS_TYPE_DOUBLE>
  * @function val_to_msg_field_impl
  * @brief _members: (position.x)
  */
-template <typename T>
+template <int RosTypeId>
 bool val_to_msg_field_impl(uint8_t* _buffer, 
                            const TypeInfo_t* _ti, 
                            const std::vector<std::string> &_members, 
-                           const T &_val)
+                           void* _val)
 {
    // 1. Go to member that matched the member's name
    for(uint32_t i = 0; i < _ti->member_count_; ++i)
@@ -48,25 +48,38 @@ bool val_to_msg_field_impl(uint8_t* _buffer,
       if(mi.name_ != _members.back())
       	continue;
       	
+      if( _members.size() == 1 && (RosTypeId != mi.type_id_) )
+      {
+         printf("Error: Trying to set a value with mismatched type \n");
+         return false;
+      }
+            	
       switch(mi.type_id_) {
       
         case rosidl_typesupport_introspection_c__ROS_TYPE_FLOAT:
         {
-           write_member<rosidl_typesupport_introspection_c__ROS_TYPE_FLOAT, T>(_buffer, mi, _members, _val);
+           write_member<rosidl_typesupport_introspection_c__ROS_TYPE_FLOAT>(_buffer, mi, _members, _val);
            return true;
-        }
+        } break;
+        
         case rosidl_typesupport_introspection_c__ROS_TYPE_DOUBLE:
         {
-           write_member<rosidl_typesupport_introspection_c__ROS_TYPE_DOUBLE, T>(_buffer, mi, _members, _val);
+           write_member<rosidl_typesupport_introspection_c__ROS_TYPE_DOUBLE>(_buffer, mi, _members, _val);
            return true;
-        }
+        } break;
+        
+        case rosidl_typesupport_introspection_c__ROS_TYPE_STRING:
+        {
+          write_member<rosidl_typesupport_introspection_c__ROS_TYPE_STRING>(_buffer, mi, _members, _val);
+          return true;
+        } break;
+        
         case rosidl_typesupport_introspection_c__ROS_TYPE_MESSAGE:
         {  
            auto ms = _members;
-           ms.pop_back();
-           write_member_nested<T>(_buffer, mi, ms, _val);
-        }
-      
+           write_member_nested<RosTypeId>(_buffer, mi, ms, _val);
+        } break;
+
       } // switch
       	
            
@@ -78,11 +91,11 @@ bool val_to_msg_field_impl(uint8_t* _buffer,
 /**
  * @function write_member_nested
  */
-template<typename T>
+template<int RosTypeId>
 bool write_member_nested(uint8_t* _buffer,
                          const MemberInfo_t &_mi,
                          const std::vector<std::string> &_members,
-                         const T& _val)
+                         void* _val)
 {
    // if (is_sequence())
    
@@ -90,7 +103,7 @@ bool write_member_nested(uint8_t* _buffer,
    if (_mi.is_array_) {
    
    } else {
-     return val_to_msg_field_impl<T>(_buffer + _mi.offset_, ti, _members, _val);
+     return val_to_msg_field_impl<RosTypeId>(_buffer + _mi.offset_, ti, _members, _val);
    }
    
    return false;
@@ -101,11 +114,11 @@ bool write_member_nested(uint8_t* _buffer,
 /**
  * @function write_member
  */
-template<int RosTypeId, typename T>
+template<int RosTypeId>
 bool write_member(uint8_t* _buffer,
                   const MemberInfo_t &_mi,
                   const std::vector<std::string> &_members, 
-                  const T& _val)
+                  void* _val)
 {
    // Handle sequences
    
@@ -114,7 +127,7 @@ bool write_member(uint8_t* _buffer,
    {
    
    } else {
-     return write_member_item<RosTypeId, T>(_buffer + _mi.offset_, _members, _val);   
+     return write_member_item<RosTypeId>(_buffer + _mi.offset_, _members, _val);   
    }
    
    return false;
@@ -123,12 +136,12 @@ bool write_member(uint8_t* _buffer,
 /**
  * @function write_member_item
  */
-template<int RosTypeId, typename T>
+template<int RosTypeId>
 bool write_member_item(uint8_t* _buffer,
                        const std::vector<std::string> &_members, 
-                       const T& _val)
+                       void* _val)
 {
    using DataType = typename TypeMapping<RosTypeId>::DataType;
-   *reinterpret_cast<DataType *>(_buffer) = _val;
+   *reinterpret_cast<DataType *>(_buffer) = static_cast<DataType*>(_val);
    return true;
 }
