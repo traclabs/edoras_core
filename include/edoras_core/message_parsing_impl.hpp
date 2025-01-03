@@ -1,4 +1,6 @@
 
+#include <rosidl_runtime_c/string.h>
+#include <rosidl_runtime_c/string_functions.h>
 #include <rosidl_runtime_c/primitives_sequence_functions.h>
 
 // Helper structures
@@ -27,6 +29,15 @@ struct TypeMapping<rosidl_typesupport_introspection_c__ROS_TYPE_DOUBLE>
    using SequenceType = rosidl_runtime_c__double__Sequence;
    static constexpr SequenceInitFunc<SequenceType> sequence_init =
      rosidl_runtime_c__double__Sequence__init;
+};
+
+template<>
+struct TypeMapping<rosidl_typesupport_introspection_c__ROS_TYPE_STRING>
+{
+   using DataType = rosidl_runtime_c__String;
+   using SequenceType = rosidl_runtime_c__String__Sequence;
+   static constexpr SequenceInitFunc<SequenceType> sequence_init =
+     rosidl_runtime_c__String__Sequence__init;
 };
 
 
@@ -134,7 +145,8 @@ bool write_member(uint8_t* _buffer,
 }                   
 
 /**
- * @function write_member_item
+ * @function write_member_item - Generic
+ * (types: float, double, int, char)
  */
 template<int RosTypeId>
 bool write_member_item(uint8_t* _buffer,
@@ -142,6 +154,26 @@ bool write_member_item(uint8_t* _buffer,
                        void* _val)
 {
    using DataType = typename TypeMapping<RosTypeId>::DataType;
-   *reinterpret_cast<DataType *>(_buffer) = static_cast<DataType*>(_val);
+   *reinterpret_cast<DataType *>(_buffer) = *(static_cast<DataType*>(_val));
    return true;
 }
+
+// Specific for string
+template<>
+bool write_member_item<rosidl_typesupport_introspection_c__ROS_TYPE_STRING>(uint8_t* _buffer,
+  const std::vector<std::string> &_members,
+  void* _val)
+{
+   using DataType = typename TypeMapping<rosidl_typesupport_introspection_c__ROS_TYPE_STRING>::DataType;
+   std::string val_string= *(static_cast<std::string*>(_val));
+   DataType* ros_string = reinterpret_cast<DataType *>(_buffer);
+   if (!rosidl_runtime_c__String__assign(ros_string, val_string.data())) 
+   {
+      printf("Runtime error - Error assigning rosidl string");
+      return false;
+   }  
+   
+   return true;
+}  
+
+

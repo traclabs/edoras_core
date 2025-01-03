@@ -67,16 +67,16 @@ bool write_member_nested(uint8_t* _buffer,
                          const std::vector<std::string> &_members,
                          const T& _val);
                              
-template<int RosTypeId, typename T>
+template<int RosTypeId>
 bool write_member(uint8_t* _buffer,
                   const MemberInfo_t &_mi,
                   const std::vector<std::string> &_members, 
-                  const T& _val);                             
+                  void* _val);                             
                     
-template<int RosTypeId, typename T>                    
+template<int RosTypeId>                    
 bool write_member_item(uint8_t* _buffer,
                        const std::vector<std::string> &_members,
-                       const T& _val);   
+                       void* _val);   
                        
                                                                                      
 #include <edoras_core/message_parsing_impl.hpp>                                          

@@ -61,6 +61,10 @@ target_link_libraries(${PROJECT_NAME}
  ${PROJECT_NAME}_private
 )
 
+# Test
+add_executable(test_reading tests/test_reading.cpp)
+target_link_libraries(test_reading ${PROJECT_NAME})
+
 # ********************************************************
 # Install
 install(TARGETS ${PROJECT_NAME} ${PROJECT_NAME}_private
