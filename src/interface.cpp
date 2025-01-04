@@ -146,6 +146,25 @@ bool set_float64(uint8_t* _buffer,
    return val_to_msg_field_impl<rosidl_typesupport_introspection_c__ROS_TYPE_DOUBLE>(_buffer, _ti, members, value_pointer);
 }
 
+bool set_int32(uint8_t* _buffer, const TypeInfo_t* _ti, const char* _member_names, int32_t _val)
+{
+   std::vector<std::string> members = split(_member_names, '.', true);
+
+   int32_t local_value = _val;
+   void* value_pointer = static_cast<void*>(&local_value);
+   return val_to_msg_field_impl<rosidl_typesupport_introspection_c__ROS_TYPE_INT32>(_buffer, _ti, members, value_pointer);
+}
+
+bool set_uint32(uint8_t* _buffer, const TypeInfo_t* _ti, const char* _member_names, uint32_t _val)
+{
+   std::vector<std::string> members = split(_member_names, '.', true);
+
+   uint32_t local_value = _val;
+   void* value_pointer = static_cast<void*>(&local_value);
+   return val_to_msg_field_impl<rosidl_typesupport_introspection_c__ROS_TYPE_UINT32>(_buffer, _ti, members, value_pointer);
+}
+
+
 bool set_const_char(uint8_t* _buffer, 
                     const TypeInfo_t* _ti, 
                     const char* _member_names, 

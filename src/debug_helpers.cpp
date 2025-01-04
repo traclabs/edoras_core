@@ -23,7 +23,7 @@ void debug_parse_message(uint8_t* _data_buffer, const TypeInfo_t *_type_info)
     uint8_t * member_data = &_data_buffer[member_info.offset_];
 
     // Recursively (because some members may be non-primitive types themselves) convert the member
-    printf("Member[%lu]: %s. Offset: %lu \n", i, member_info.name_, member_info.offset_);
+    printf("Member[%u]: %s. Offset: %u \n", i, member_info.name_, member_info.offset_);
     debug_parse_member(member_info, member_data);
   }
 
@@ -36,7 +36,7 @@ void debug_parse_member(const MemberInfo_t & _member_info, uint8_t * _member_dat
 {  
   // Print type of member (field in ROS2 message)
   std::string member_type_name = member_type_to_string(_member_info);
-  printf("\t * Member type: %s ", member_type_name.c_str());
+
   if (_member_info.is_array_) {
     // Only dealing with dynamic arrays for Phase I
     if (_member_info.is_upper_bound_ || _member_info.array_size_ == 0) {
@@ -76,9 +76,49 @@ void debug_parse_basic_value(const MemberInfo_t & _member_info,
       break;
     case rosidl_typesupport_introspection_c__ROS_TYPE_LONG_DOUBLE:
     {  long double val = *reinterpret_cast<const long double *>(_member_data); 
-       printf( "\t\t Member[%s]: %f \n", _member_info.name_, val);    
+       printf( "\t\t Member[%s]: %Lf \n", _member_info.name_, val);    
     }
       break;
+    case rosidl_typesupport_introspection_c__ROS_TYPE_UINT8:
+    {  uint8_t val = *reinterpret_cast<const uint8_t *>(_member_data); 
+           printf( "\t\t Member[%s]: %d \n", _member_info.name_, val);
+    }
+      break;
+    case rosidl_typesupport_introspection_c__ROS_TYPE_INT8:
+    {  int8_t val = *reinterpret_cast<const int8_t *>(_member_data); 
+           printf( "\t\t Member[%s]: %d \n", _member_info.name_, val);
+    }
+      break;      
+    case rosidl_typesupport_introspection_c__ROS_TYPE_UINT16:
+    {  uint16_t val = *reinterpret_cast<const uint16_t *>(_member_data); 
+           printf( "\t\t Member[%s]: %d \n", _member_info.name_, val);
+    }
+      break;
+    case rosidl_typesupport_introspection_c__ROS_TYPE_INT16:
+    {  int16_t val = *reinterpret_cast<const int16_t *>(_member_data); 
+           printf( "\t\t Member[%s]: %d \n", _member_info.name_, val);
+    }
+      break;      
+    case rosidl_typesupport_introspection_c__ROS_TYPE_UINT32:
+    {  uint32_t val = *reinterpret_cast<const uint32_t *>(_member_data); 
+           printf( "\t\t Member[%s]: %d \n", _member_info.name_, val);
+    }
+      break;
+    case rosidl_typesupport_introspection_c__ROS_TYPE_INT32:
+    {  int32_t val = *reinterpret_cast<const int32_t *>(_member_data); 
+           printf( "\t\t Member[%s]: %d \n", _member_info.name_, val);
+    }
+      break;
+    case rosidl_typesupport_introspection_c__ROS_TYPE_UINT64:
+    {  uint64_t val = *reinterpret_cast<const uint64_t *>(_member_data); 
+           printf( "\t\t Member[%s]: %ld \n", _member_info.name_, val);
+    }
+      break;
+    case rosidl_typesupport_introspection_c__ROS_TYPE_INT64:
+    {  int64_t val = *reinterpret_cast<const int64_t *>(_member_data); 
+           printf( "\t\t Member[%s]: %ld \n", _member_info.name_, val);
+    }
+      break;                 
     case rosidl_typesupport_introspection_c__ROS_TYPE_STRING:
     {  const char* val = reinterpret_cast<const rosidl_runtime_c__String *>(_member_data)->data; 
            printf( "\t\t Member[%s]: %s \n", _member_info.name_, val);
@@ -252,7 +292,7 @@ void member_to_array_item(const MemberInfo_t & _member_info,
     case rosidl_typesupport_introspection_c__ROS_TYPE_LONG_DOUBLE:
     {
       long double val = *reinterpret_cast<const long double *>(_member_data);
-      printf( "\t\t *  %f ", val );
+      printf( "\t\t *  %Lf ", val );
     }  
       break;
     case rosidl_typesupport_introspection_c__ROS_TYPE_STRING:

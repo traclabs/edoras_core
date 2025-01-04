@@ -191,7 +191,7 @@ bool val_to_msg_field_impl(uint8_t* _buffer,
         } break;
         
         case rosidl_typesupport_introspection_c__ROS_TYPE_DOUBLE:
-        {  printf("Type double.... \n");
+        {
            return write_member<rosidl_typesupport_introspection_c__ROS_TYPE_DOUBLE>(_buffer, mi, _members, _val);
         } break;
 

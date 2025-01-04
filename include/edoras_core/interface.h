@@ -51,14 +51,16 @@ extern "C"
 
   
   // Get data
-  bool get_float64(const uint8_t* _buffer, const TypeInfo_t* _ti, const char* _member_name, double *_val);
-  bool get_uint8(const uint8_t* _buffer, const TypeInfo_t* _ti, const char* _member_name, uint8_t* _val);
-  bool get_const_char(const uint8_t* _buffer, const TypeInfo_t* _ti, const char* _member_name, char _val[EDORAS_CONST_CHAR_MAX_SIZE]);
+  bool get_float64(const uint8_t* _buffer, const TypeInfo_t* _ti, const char* _member_names, double *_val);
+  bool get_uint8(const uint8_t* _buffer, const TypeInfo_t* _ti, const char* _member_names, uint8_t* _val);
+  bool get_const_char(const uint8_t* _buffer, const TypeInfo_t* _ti, const char* _member_names, char _val[EDORAS_CONST_CHAR_MAX_SIZE]);
   
   
   // Set data
-  bool set_float64(uint8_t* _buffer, const TypeInfo_t* _ti, const char* _member_name, double _val);
-  bool set_const_char(uint8_t* _buffer, const TypeInfo_t* _ti, const char* _member_name, const char* _val);
+  bool set_float64(uint8_t* _buffer, const TypeInfo_t* _ti, const char* _member_names, double _val);
+  bool set_int32(uint8_t* _buffer, const TypeInfo_t* _ti, const char* _member_names, int32_t _val);
+  bool set_uint32(uint8_t* _buffer, const TypeInfo_t* _ti, const char* _member_names, uint32_t _val);
+  bool set_const_char(uint8_t* _buffer, const TypeInfo_t* _ti, const char* _member_names, const char* _val);
   
 #ifdef __cplusplus
 }
