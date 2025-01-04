@@ -47,7 +47,7 @@ extern "C"
   bool resize_sequence(uint8_t* _buffer,
                        const TypeInfo_t* _ti, 
                        const char* _member_names,
-                       const size_t &_size);
+                       size_t _size);
 
   
   // Get data
@@ -57,7 +57,7 @@ extern "C"
   
   
   // Set data
-  bool set_float64(uint8_t* _buffer, const TypeInfo_t* _ti, const char* _member_name, const double &_val);
+  bool set_float64(uint8_t* _buffer, const TypeInfo_t* _ti, const char* _member_name, double _val);
   bool set_const_char(uint8_t* _buffer, const TypeInfo_t* _ti, const char* _member_name, const char* _val);
   
 #ifdef __cplusplus

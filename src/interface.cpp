@@ -118,7 +118,7 @@ bool get_const_char(const uint8_t* _buffer,
 bool resize_sequence(uint8_t* _buffer,
                      const TypeInfo_t* _ti, 
                      const char* _member_names,
-                     const size_t &_size)
+                     size_t _size)
 {
    std::vector<std::string> members = split(_member_names, '.', true);
    return resize_sequence_impl(_buffer, _ti, members, _size);
@@ -137,7 +137,7 @@ bool resize_sequence(uint8_t* _buffer,
 bool set_float64(uint8_t* _buffer, 
                  const TypeInfo_t* _ti, 
                  const char* _member_names, 
-                 const double &_val)
+                 double _val)
 {
    std::vector<std::string> members = split(_member_names, '.', true);
 
