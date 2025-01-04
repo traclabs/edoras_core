@@ -65,6 +65,12 @@ target_link_libraries(${PROJECT_NAME}
 add_executable(test_reading tests/test_reading.cpp)
 target_link_libraries(test_reading ${PROJECT_NAME})
 
+add_executable(test_setting_joint_state tests/test_setting_joint_state.cpp)
+target_link_libraries(test_setting_joint_state ${PROJECT_NAME})
+
+add_executable(test_setting_header tests/test_setting_header.cpp)
+target_link_libraries(test_setting_header ${PROJECT_NAME})
+
 # ********************************************************
 # Install
 install(TARGETS ${PROJECT_NAME} ${PROJECT_NAME}_private

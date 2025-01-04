@@ -51,6 +51,12 @@ bool primitive_to_val_impl(const MemberInfo_t &_mi,
                            const uint8_t* _buffer, 
                            T* _val);
 
+template <typename T>
+bool dynamic_array_element_to_val(const MemberInfo_t &_mi, 
+                                  const uint8_t* _buffer, 
+                                  size_t _index, 
+                                  T* _val);
+
 #include <edoras_core/message_reading_impl.hpp>
                                           
 ////////////////////////////////////////////////////////////////////////////
@@ -78,7 +84,14 @@ bool write_member_item(uint8_t* _buffer,
                        const std::vector<std::string> &_members,
                        void* _val);   
                        
-                                                                                     
+bool is_sequence(const MemberInfo_t &_mi);
+bool is_primitive(const int &RosTypeId);
+
+bool resize_sequence_impl(uint8_t* _buffer,
+                          const TypeInfo_t* _ti, 
+                          const std::vector<std::string> &_members,
+                          const size_t &_size);
+
 #include <edoras_core/message_parsing_impl.hpp>                                          
                                                                                
 #endif /* __EDORAS_CONVERSION_PRIVATE__ */

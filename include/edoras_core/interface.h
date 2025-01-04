@@ -6,6 +6,7 @@
 #define __EDORAS_CORE_INTERFACE__
 
 #include <edoras_core/types.h>
+#define EDORAS_CONST_CHAR_MAX_SIZE 100
 
 #ifdef __cplusplus
 extern "C"
@@ -42,15 +43,21 @@ extern "C"
   // Helpers
   void printBuffer(uint8_t* _data, size_t _data_size, const char* _msg);
 
+  // Sequences resizing
+  bool resize_sequence(uint8_t* _buffer,
+                       const TypeInfo_t* _ti, 
+                       const char* _member_names,
+                       const size_t &_size);
+
   
   // Get data
   bool get_float64(const uint8_t* _buffer, const TypeInfo_t* _ti, const char* _member_name, double *_val);
   bool get_uint8(const uint8_t* _buffer, const TypeInfo_t* _ti, const char* _member_name, uint8_t* _val);
-  bool get_const_char(const uint8_t* _buffer, const TypeInfo_t* _ti, const char* _member_name, const char* _val);
+  bool get_const_char(const uint8_t* _buffer, const TypeInfo_t* _ti, const char* _member_name, char _val[EDORAS_CONST_CHAR_MAX_SIZE]);
   
   
   // Set data
-  bool set_float64(uint8_t* _buffer, const TypeInfo_t* _ti, const char* _member_name, double _val);
+  bool set_float64(uint8_t* _buffer, const TypeInfo_t* _ti, const char* _member_name, const double &_val);
   bool set_const_char(uint8_t* _buffer, const TypeInfo_t* _ti, const char* _member_name, const char* _val);
   
 #ifdef __cplusplus

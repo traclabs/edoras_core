@@ -2,6 +2,7 @@
 
 #include <edoras_core/interface.h>
 #include <string>
+#include <string.h>
 
 #include <edoras_core/conversion_private.h>
 #include <edoras_core/debug_helpers.h>
@@ -100,21 +101,38 @@ bool get_uint8(const uint8_t* _buffer,
 bool get_const_char(const uint8_t* _buffer, 
                     const TypeInfo_t* _ti, 
                     const char* _member_names, 
-                    const char* _val)
-{
+                    char _val[])
+{ 
    std::vector<std::string> members = split(_member_names, '.', true);
 
-   std::string val;
-   bool res =  msg_to_val_impl<std::string>(_buffer, _ti, members, &val);
-   _val = val.c_str();
-   
-   return res;   
+   std::string value;
+   if(!msg_to_val_impl<std::string>(_buffer, _ti, members, &value))
+     return false;
+
+   strcpy(_val, value.c_str());
+   return true;   
 }
+
+/////////////////////////////////////////////
+// Set dynamically-sized arrays
+bool resize_sequence(uint8_t* _buffer,
+                     const TypeInfo_t* _ti, 
+                     const char* _member_names,
+                     const size_t &_size)
+{
+   std::vector<std::string> members = split(_member_names, '.', true);
+   return resize_sequence_impl(_buffer, _ti, members, _size);
+}
+
+                             
+/////////////////////////////////////////////
+
 
 //////////////////////////////////////////
 // Setters
 // Message parsing
 /////////////////////////////////////////
+
 
 bool set_float64(uint8_t* _buffer, 
                  const TypeInfo_t* _ti, 
