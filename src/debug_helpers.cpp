@@ -2,6 +2,7 @@
 #include <edoras_core/debug_helpers.h>
 
 #include <rosidl_typesupport_introspection_c/field_types.h>
+#include <rosidl_runtime_c/string.h>
 #include <sstream>
 
 //#include <rclcpp/rclcpp.hpp>

@@ -1,6 +1,7 @@
 
 #include <rosidl_typesupport_introspection_c/field_types.h>
-
+#include <rosidl_runtime_c/primitives_sequence.h>
+#include <rosidl_runtime_c/string.h>
 
 /**
  * @function get_value_impl

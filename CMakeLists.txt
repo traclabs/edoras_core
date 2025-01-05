@@ -9,10 +9,10 @@ set(dependencies
  rcutils
  rmw
  rmw_implementation
- rosidl_dynamic_typesupport
+# rosidl_dynamic_typesupport
  rcpputils
   rosidl_typesupport_fastrtps_c
-  rosidl_dynamic_typesupport_fastrtps
+#  rosidl_dynamic_typesupport_fastrtps
   fastcdr
   rmw_fastrtps_cpp
   rmw_fastrtps_shared_cpp
